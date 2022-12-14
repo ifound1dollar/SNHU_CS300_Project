@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <vector>
+#include <Windows.h>
 
 using namespace std;
 
@@ -186,10 +188,10 @@ void InsertCourse(string line, vector<string> courseIDs)
 /// <summary>
 /// Opens input file and reads data to be converted to Course objects and inserted into binary tree
 /// </summary>
-void LoadCoursesFromFile()
+bool LoadCoursesFromFile(string path = "courses.dat")
 {
     ifstream inStream;
-    inStream.open("courses.dat");
+    inStream.open(path);
     string line;
     vector<string> courseIDs;
 
@@ -220,10 +222,12 @@ void LoadCoursesFromFile()
             }
         }
         inStream.close();
+        return true;
     }
     else
     {
         cout << "Failed to open file." << endl;
+        return false;
     }
 }
 
@@ -246,8 +250,23 @@ int main()
         {
             if (!alreadyLoaded)
             {
-                LoadCoursesFromFile();
-                alreadyLoaded = true;
+                //if successfully loaded courses from file, set variable, else try again with path input
+                if (LoadCoursesFromFile())
+                {
+                    alreadyLoaded = true;
+                }
+                else
+                {
+                    //get path from user, calling LoadCoursesFromFile() with path parameter
+                    cout << "Enter file path of courses.dat: ";
+                    cin.ignore();
+                    getline(cin, userInput);
+                    cout << "\n";
+                    if (LoadCoursesFromFile(userInput))
+                    {
+                        alreadyLoaded = true;
+                    }
+                }
             }
             else
             {
